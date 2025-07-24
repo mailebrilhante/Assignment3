@@ -29,6 +29,10 @@ class Client {
     private var lastUpdate: String? = null
 
     suspend fun trackShipment(id: String) {
+        if (id.isBlank()) {
+            _errorMessage.value = "Shipment ID cannot be empty"
+            return
+        }
         if (_trackedShipments.value.any { it.id == id }) {
             _errorMessage.value = "This shipment is already being tracked"
             return
@@ -51,6 +55,10 @@ class Client {
         }
 
         val parts = updateString.split(",")
+        if (parts.size < 3 || parts[1].isBlank()) {
+            _errorMessage.value = "Invalid update format or empty shipment ID"
+            return
+        }
         val update = ShipmentUpdate(
             type = parts[0],
             id = parts[1],
