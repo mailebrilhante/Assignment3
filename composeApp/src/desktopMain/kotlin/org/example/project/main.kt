@@ -16,10 +16,13 @@ fun main() = runBlocking {
 
     // Start the client UI on the main thread
     application {
-        Window(onCloseRequest = {
+        Window(
+            onCloseRequest = {
             serverJob.cancel()
             exitApplication()
-        }, title = "Shipment Tracker") {
+        },
+            title = "Shipment Tracker",
+            alwaysOnTop = true) {
             App()
         }
     }
