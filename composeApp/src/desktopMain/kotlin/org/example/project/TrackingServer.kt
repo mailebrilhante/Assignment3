@@ -29,7 +29,8 @@ class TrackingServer {
                 post("/shipment") {
                     val update = call.receive<ShipmentUpdate>()
                     val shipment = _shipments.getOrPut(update.id) { Shipment(update.id) }
-                    shipment.applyUpdate(update.type, update.timestamp, update.otherInfo)
+                    val command = CommandFactory.create(update, shipment)
+                    command?.execute()
                     call.respond(mapOf("status" to "ok"))
                 }
                 get("/") {

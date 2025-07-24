@@ -68,37 +68,6 @@ class Shipment(private val _id: String) : Subject {
         notifyObservers()
     }
 
-    fun applyUpdate(type: String, timestamp: Long, otherInfo: String?) {
-        val previousStatus = this.status
-        val previousLocation = this.location
-
-        when (type) {
-            "created" -> setStatus("created")
-            "shipped" -> {
-                setStatus("shipped")
-                otherInfo?.toLongOrNull()?.let { setExpectedDelivery(it) }
-            }
-            "location" -> otherInfo?.let { setLocation(it) }
-            "delivered" -> setStatus("delivered")
-            "delayed" -> {
-                setStatus("delayed")
-                otherInfo?.toLongOrNull()?.let { setExpectedDelivery(it) }
-            }
-            "lost" -> setStatus("lost")
-            "canceled" -> setStatus("canceled")
-            "noteadded" -> otherInfo?.let { addNote(it) }
-        }
-
-        if (previousStatus != this.status) {
-            addUpdate("Shipment went from $previousStatus to ${this.status} on ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(timestamp))}")
-        }
-        if (previousLocation != this.location) {
-            addUpdate("Shipment location changed from $previousLocation to ${this.location}")
-        }
-
-        notifyObservers()
-    }
-
     fun copy(): Shipment {
         val newShipment = Shipment(id)
         newShipment._status = this._status
