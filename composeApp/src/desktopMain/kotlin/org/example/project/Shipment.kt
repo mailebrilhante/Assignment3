@@ -65,10 +65,26 @@ class Shipment(private val _id: String) : Subject {
         notifyObservers()
     }
 
-    fun applyUpdate(updateAction: (Shipment, Long, String?) -> Unit, timestamp: Long, otherInfo: String?) {
+    fun applyUpdate(type: String, timestamp: Long, otherInfo: String?) {
         val previousStatus = this.status
         val previousLocation = this.location
-        updateAction(this, timestamp, otherInfo)
+
+        when (type) {
+            "created" -> setStatus("created")
+            "shipped" -> {
+                setStatus("shipped")
+                otherInfo?.toLongOrNull()?.let { setExpectedDelivery(it) }
+            }
+            "location" -> otherInfo?.let { setLocation(it) }
+            "delivered" -> setStatus("delivered")
+            "delayed" -> {
+                setStatus("delayed")
+                otherInfo?.toLongOrNull()?.let { setExpectedDelivery(it) }
+            }
+            "lost" -> setStatus("lost")
+            "canceled" -> setStatus("canceled")
+            "noteadded" -> otherInfo?.let { addNote(it) }
+        }
 
         if (previousStatus != this.status) {
             addUpdate("Shipment went from $previousStatus to ${this.status} on ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(timestamp))}")

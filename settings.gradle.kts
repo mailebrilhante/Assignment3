@@ -1,4 +1,4 @@
-rootProject.name = "Assignment2"
+rootProject.name = "Assignment3"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
