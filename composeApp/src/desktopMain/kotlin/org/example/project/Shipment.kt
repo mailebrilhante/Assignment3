@@ -1,5 +1,8 @@
 package org.example.project
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Shipment(private val _id: String) : Subject {
 
     val id: String

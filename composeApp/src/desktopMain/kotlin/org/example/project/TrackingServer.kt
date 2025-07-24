@@ -1,6 +1,7 @@
 
 package org.example.project
 
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -29,6 +30,15 @@ class TrackingServer {
                 }
                 get("/") {
                     call.respondText("Tracking Server is running!")
+                }
+                get("/shipment/{id}") {
+                    val id = call.parameters["id"]
+                    val shipment = _shipments[id]
+                    if (shipment != null) {
+                        call.respond(shipment)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
                 }
             }
         }.start(wait = true)

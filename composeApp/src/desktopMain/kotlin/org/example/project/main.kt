@@ -1,6 +1,26 @@
 package org.example.project
 
-fun main() {
-    val server = TrackingServer()
-    server.start()
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlin.concurrent.thread
+
+fun main() = runBlocking {
+    // Start the server in a background thread
+    val serverJob = launch(Dispatchers.IO) {
+        val server = TrackingServer()
+        server.start()
+    }
+
+    // Start the client UI on the main thread
+    application {
+        Window(onCloseRequest = {
+            serverJob.cancel()
+            exitApplication()
+        }, title = "Shipment Tracker") {
+            App()
+        }
+    }
 }

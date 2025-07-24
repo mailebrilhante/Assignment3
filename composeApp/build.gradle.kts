@@ -35,6 +35,9 @@ kotlin {
             implementation("io.ktor:ktor-server-netty:2.3.11")
             implementation("io.ktor:ktor-server-content-negotiation:2.3.11")
             implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+            implementation("io.ktor:ktor-client-core:2.3.11")
+            implementation("io.ktor:ktor-client-cio:2.3.11")
+            implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
             implementation(libs.kotlinx.coroutinesSwing)
             implementation("ch.qos.logback:logback-classic:1.5.6")
         }
