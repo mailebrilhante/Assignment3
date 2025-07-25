@@ -1,11 +1,17 @@
 package org.example.project
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 abstract class ShipmentBase : Subject {
-    abstract val id: String
-    abstract val creationTimestamp: Long
+    private var _id: String = ""
+    val id: String
+        get() = _id
+
+    private var _creationTimestamp: Long = 0
+    val creationTimestamp: Long
+        get() = _creationTimestamp
 
     private var _status: String = "created"
     open val status: String
@@ -19,20 +25,26 @@ abstract class ShipmentBase : Subject {
     open val expectedDelivery: Long?
         get() = _expectedDelivery
 
-    private val _updates = mutableListOf<String>()
-    open val updates: List<String>
+    protected val _updates = mutableListOf<String>()
+    val updates: List<String>
         get() = _updates.toList()
 
-    private val _notes = mutableListOf<String>()
-    open val notes: List<String>
+    protected val _notes = mutableListOf<String>()
+    val notes: List<String>
         get() = _notes.toList()
 
     private var _abnormalUpdateMessage: String? = null
     open val abnormalUpdateMessage: String?
         get() = _abnormalUpdateMessage
 
-    @kotlinx.serialization.Transient
+    @Transient
     private val observers = mutableListOf<Observer>()
+
+    // Setters for initializing properties
+    fun initialize(id: String, creationTimestamp: Long) {
+        this._id = id
+        this._creationTimestamp = creationTimestamp
+    }
 
     open fun setStatus(newStatus: String) {
         _status = newStatus
@@ -71,4 +83,6 @@ abstract class ShipmentBase : Subject {
     override fun notifyObservers() {
         observers.forEach { it.update(this) }
     }
+
+    abstract fun copy(): ShipmentBase
 } 

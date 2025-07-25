@@ -87,7 +87,7 @@ fun App() {
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn {
-                items(trackedShipments) { shipment ->
+                items(trackedShipments, key = { it.id }) { shipment ->
                     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), elevation = 4.dp) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

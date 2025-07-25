@@ -13,8 +13,4 @@ class LostCommand(
         shipment.setStatus("lost")
         shipment.addUpdate("Shipment went from $previousStatus to lost on ${formatDate(timestamp)}")
     }
-
-    private fun formatDate(timestamp: Long): String {
-        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
-    }
 } 

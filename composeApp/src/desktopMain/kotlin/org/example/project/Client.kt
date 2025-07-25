@@ -72,11 +72,35 @@ object Client {
             _errorMessage.value = "Invalid update format or empty shipment ID"
             return
         }
+
+        // --- Start of Fix ---
+        // Find the shipment we are tracking locally
+        val shipmentId = parts[1]
+        val shipmentToUpdate = _trackedShipments.value.find { it.id == shipmentId }
+
+        // If we found it, apply the update to our local copy immediately
+        if (shipmentToUpdate != null) {
+            val updateForCommand = ShipmentUpdate(
+                _type = parts[0],
+                _id = shipmentId,
+                _timestamp = parts[2].toLong(),
+                _otherInfo = parts.getOrNull(3)
+            )
+            val command = CommandFactory.create(updateForCommand, shipmentToUpdate)
+            command?.execute()
+
+            // Trigger a UI refresh by emitting a new list
+            _trackedShipments.value = _trackedShipments.value.map {
+                if (it.id == shipmentId) shipmentToUpdate.copy() else it
+            }
+        }
+        // --- End of Fix ---
+
         val update = ShipmentUpdate(
-            type = parts[0],
-            id = parts[1],
-            timestamp = parts[2].toLong(),
-            otherInfo = parts.getOrNull(3)
+            _type = parts[0],
+            _id = parts[1],
+            _timestamp = parts[2].toLong(),
+            _otherInfo = parts.getOrNull(3)
         )
         val response = client.post("http://localhost:8080/shipment") {
             contentType(ContentType.Application.Json)
@@ -101,15 +125,17 @@ object Client {
 
     suspend fun startPolling() {
         while (true) {
-            val updatedShipments = _trackedShipments.value.mapNotNull { shipment ->
-                val response = client.get("http://localhost:8080/shipment/${shipment.id}")
-                if (response.status == HttpStatusCode.OK) {
-                    response.body<ShipmentBase>()
-                } else {
-                    null
+            if (_trackedShipments.value.isNotEmpty()) {
+                val updatedShipments = _trackedShipments.value.map { oldShipment ->
+                    val response = client.get("http://localhost:8080/shipment/${oldShipment.id}")
+                    if (response.status == HttpStatusCode.OK) {
+                        response.body<ShipmentBase>() // On success, return the new, updated shipment
+                    } else {
+                        oldShipment // On failure, return the old shipment so it doesn't disappear
+                    }
                 }
+                _trackedShipments.value = updatedShipments
             }
-            _trackedShipments.value = updatedShipments
             delay(5000)
         }
     }

@@ -13,7 +13,4 @@ class CreatedCommand(
         shipment.addUpdate("Shipment created on ${formatDate(timestamp)}")
     }
 
-    private fun formatDate(timestamp: Long): String {
-        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
-    }
 } 
