@@ -182,12 +182,17 @@ class ShipmentTests {
         NoteAddedCommand(shipment, 1L, note).execute()
         assertEquals(1, shipment.notes.size)
         assertEquals(note, shipment.notes.first())
+        assertEquals(1, shipment.updates.size)
+        assertTrue(shipment.updates.first().contains("Note added on"))
+        assertTrue(shipment.updates.first().contains(note))
     }
 
     @Test
     fun noteAddedCommandNullData() {
         val shipment = StandardShipment().apply { initialize("s200", System.currentTimeMillis()) }
+        val initialNoteCount = shipment.notes.size
         NoteAddedCommand(shipment, 2L, null).execute()
+        assertEquals(initialNoteCount, shipment.notes.size)
         assertTrue(shipment.updates.last().contains("'null'"))
     }
     
