@@ -40,7 +40,6 @@ abstract class ShipmentBase : Subject {
     @Transient
     private val observers = mutableListOf<Observer>()
 
-    // Setters for initializing properties
     fun initialize(id: String, creationTimestamp: Long) {
         this._id = id
         this._creationTimestamp = creationTimestamp

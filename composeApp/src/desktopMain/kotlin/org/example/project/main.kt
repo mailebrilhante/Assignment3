@@ -8,12 +8,10 @@ import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.thread
 
 fun main() = runBlocking {
-    // Start the server in a background thread
     val serverJob = launch(Dispatchers.IO) {
         TrackingServer.start()
     }
 
-    // Start the client UI on the main thread
     application {
         Window(
             onCloseRequest = {

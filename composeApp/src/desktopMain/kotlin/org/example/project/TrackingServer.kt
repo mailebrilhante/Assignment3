@@ -43,7 +43,6 @@ object TrackingServer {
             post("/shipment") {
                 val update = call.receive<ShipmentUpdate>()
 
-                // Handle creation of a new shipment
                 if (update.type == "created") {
                     val newShipment = ShipmentFactory.create(update)
                     _shipments[newShipment.id] = newShipment
@@ -53,14 +52,12 @@ object TrackingServer {
                     return@post
                 }
 
-                // Handle updates to an existing shipment
                 val existingShipment = _shipments[update.id]
                 if (existingShipment != null) {
                     val command = CommandFactory.create(update, existingShipment)
                     command?.execute()
                     call.respond(mapOf("status" to "ok"))
                 } else {
-                    // Optionally handle updates for shipments that don't exist
                     call.respond(HttpStatusCode.NotFound, mapOf("error" to "Shipment not found"))
                 }
             }
