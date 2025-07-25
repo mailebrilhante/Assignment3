@@ -16,8 +16,8 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
 object TrackingServer {
-    private val _shipments = mutableMapOf<String, IShipment>()
-    val shipments: Map<String, IShipment>
+    internal val _shipments = mutableMapOf<String, ShipmentBase>()
+    val shipments: Map<String, ShipmentBase>
         get() = _shipments.toMap()
 
     fun start() {
@@ -30,7 +30,7 @@ object TrackingServer {
         install(ContentNegotiation) {
             json(Json {
                 serializersModule = SerializersModule {
-                    polymorphic(IShipment::class) {
+                    polymorphic(ShipmentBase::class) {
                         subclass(StandardShipment::class)
                         subclass(ExpressShipment::class)
                         subclass(OvernightShipment::class)

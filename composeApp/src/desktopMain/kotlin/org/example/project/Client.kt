@@ -18,11 +18,11 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
 object Client {
-    private val client = HttpClient(CIO) {
+    internal var client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 serializersModule = SerializersModule {
-                    polymorphic(IShipment::class) {
+                    polymorphic(ShipmentBase::class) {
                         subclass(StandardShipment::class)
                         subclass(ExpressShipment::class)
                         subclass(OvernightShipment::class)
@@ -33,7 +33,7 @@ object Client {
         }
     }
 
-    private val _trackedShipments = MutableStateFlow<List<IShipment>>(emptyList())
+    private val _trackedShipments = MutableStateFlow<List<ShipmentBase>>(emptyList())
     val trackedShipments = _trackedShipments.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -53,7 +53,7 @@ object Client {
 
         val response = client.get("http://localhost:8080/shipment/$id")
         if (response.status == HttpStatusCode.OK) {
-            val shipment = response.body<IShipment>()
+            val shipment = response.body<ShipmentBase>()
             _trackedShipments.value = _trackedShipments.value + shipment
             _errorMessage.value = null
         } else {
@@ -104,7 +104,7 @@ object Client {
             val updatedShipments = _trackedShipments.value.mapNotNull { shipment ->
                 val response = client.get("http://localhost:8080/shipment/${shipment.id}")
                 if (response.status == HttpStatusCode.OK) {
-                    response.body<IShipment>()
+                    response.body<ShipmentBase>()
                 } else {
                     null
                 }

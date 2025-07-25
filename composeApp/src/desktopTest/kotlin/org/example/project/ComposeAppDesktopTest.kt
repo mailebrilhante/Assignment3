@@ -1,5 +1,6 @@
 package org.example.project
 
+import kotlinx.serialization.PolymorphicSerializer
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 import kotlin.test.*
@@ -9,7 +10,7 @@ class ShipmentTests {
     // Helper class for observer tests
     private class TestObserver : Observer {
         var notified = false
-        override fun update(shipment: IShipment) {
+        override fun update(shipment: ShipmentBase) {
             notified = true
         }
     }
@@ -260,4 +261,5 @@ class ShipmentTests {
         assertTrue(ShipmentFactory.create(ShipmentUpdate("created", "s5", timestamp)) is StandardShipment)
         assertTrue(ShipmentFactory.create(ShipmentUpdate("created", "s6", timestamp, "economy")) is StandardShipment)
     }
+    
 } 

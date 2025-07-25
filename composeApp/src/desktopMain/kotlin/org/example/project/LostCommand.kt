@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 class LostCommand(
-    private val shipment: IShipment,
+    private val shipment: ShipmentBase,
     private val timestamp: Long
 ) : ShipmentCommand {
     override fun execute() {

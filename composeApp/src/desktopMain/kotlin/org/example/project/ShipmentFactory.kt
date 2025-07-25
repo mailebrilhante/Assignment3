@@ -1,7 +1,7 @@
 package org.example.project
 
 object ShipmentFactory {
-    fun create(update: ShipmentUpdate): IShipment {
+    fun create(update: ShipmentUpdate): ShipmentBase {
         val shipment = when (update.otherInfo) {
             "express" -> ExpressShipment(update.id, update.timestamp)
             "overnight" -> OvernightShipment(update.id, update.timestamp)

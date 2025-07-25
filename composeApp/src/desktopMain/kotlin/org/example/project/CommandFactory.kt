@@ -1,7 +1,7 @@
 package org.example.project
 
 object CommandFactory {
-    fun create(update: ShipmentUpdate, shipment: IShipment): ShipmentCommand? {
+    fun create(update: ShipmentUpdate, shipment: ShipmentBase): ShipmentCommand? {
         return when (update.type) {
             "created" -> CreatedCommand(shipment, update.timestamp)
             "shipped" -> ShippedCommand(shipment, update.timestamp, update.otherInfo?.toLongOrNull())
