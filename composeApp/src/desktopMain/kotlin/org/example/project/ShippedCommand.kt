@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 class ShippedCommand(
-    private val shipment: Shipment,
+    private val shipment: IShipment,
     private val timestamp: Long,
     private val expectedDelivery: Long?
 ) : ShipmentCommand {

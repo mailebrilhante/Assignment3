@@ -12,15 +12,28 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 object Client {
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
-            json()
+            json(Json {
+                serializersModule = SerializersModule {
+                    polymorphic(IShipment::class) {
+                        subclass(StandardShipment::class)
+                        subclass(ExpressShipment::class)
+                        subclass(OvernightShipment::class)
+                        subclass(BulkShipment::class)
+                    }
+                }
+            })
         }
     }
 
-    private val _trackedShipments = MutableStateFlow<List<Shipment>>(emptyList())
+    private val _trackedShipments = MutableStateFlow<List<IShipment>>(emptyList())
     val trackedShipments = _trackedShipments.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -40,7 +53,7 @@ object Client {
 
         val response = client.get("http://localhost:8080/shipment/$id")
         if (response.status == HttpStatusCode.OK) {
-            val shipment = response.body<Shipment>()
+            val shipment = response.body<IShipment>()
             _trackedShipments.value = _trackedShipments.value + shipment
             _errorMessage.value = null
         } else {
@@ -91,7 +104,7 @@ object Client {
             val updatedShipments = _trackedShipments.value.mapNotNull { shipment ->
                 val response = client.get("http://localhost:8080/shipment/${shipment.id}")
                 if (response.status == HttpStatusCode.OK) {
-                    response.body<Shipment>()
+                    response.body<IShipment>()
                 } else {
                     null
                 }

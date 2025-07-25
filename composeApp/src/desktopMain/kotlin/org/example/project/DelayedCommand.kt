@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 class DelayedCommand(
-    private val shipment: Shipment,
+    private val shipment: IShipment,
     private val timestamp: Long,
     private val newExpectedDelivery: Long?
 ) : ShipmentCommand {

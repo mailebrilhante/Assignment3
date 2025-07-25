@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -87,34 +88,39 @@ fun App() {
 
             LazyColumn {
                 items(trackedShipments) { shipment ->
-                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("ID: ${shipment.id}", style = MaterialTheme.typography.h6)
-                            Button(onClick = {
-                                client.stopTrackingShipment(shipment.id)
-                            }) {
-                                Text("Stop Tracking")
+                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), elevation = 4.dp) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text("ID: ${shipment.id}", style = MaterialTheme.typography.h6)
+                                Button(onClick = {
+                                    client.stopTrackingShipment(shipment.id)
+                                }) {
+                                    Text("Stop Tracking")
+                                }
                             }
-                        }
-                        Text("Status: ${shipment.status}")
-                        Text("Location: ${shipment.location}")
-                        val formattedDate = shipment.expectedDelivery?.let {
-                            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(it))
-                        } ?: "N/A"
-                        Text("Expected Delivery: $formattedDate")
-                        if (shipment.notes.isNotEmpty()) {
-                            Text("Notes:")
-                            shipment.notes.forEach { note ->
-                                Text("  - $note")
+                            shipment.abnormalUpdateMessage?.let {
+                                Text(it, color = MaterialTheme.colors.error)
                             }
-                        }
-                        if (shipment.updates.isNotEmpty()) {
-                            Text("Updates:")
-                            shipment.updates.forEach { update ->
-                                Text("  - $update")
+                            Text("Status: ${shipment.status}")
+                            Text("Location: ${shipment.location}")
+                            val formattedDate = shipment.expectedDelivery?.let {
+                                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(it))
+                            } ?: "N/A"
+                            Text("Expected Delivery: $formattedDate")
+                            if (shipment.notes.isNotEmpty()) {
+                                Text("Notes:")
+                                shipment.notes.forEach { note ->
+                                    Text("  - $note")
+                                }
                             }
+                            if (shipment.updates.isNotEmpty()) {
+                                Text("Updates:")
+                                shipment.updates.forEach { update ->
+                                    Text("  - $update")
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
