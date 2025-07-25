@@ -63,7 +63,6 @@ abstract class ShipmentBase : Subject {
 
     open fun addNote(note: String) {
         _notes.add(note)
-        addUpdate("Note added: $note")
     }
 
     open fun addUpdate(update: String) {

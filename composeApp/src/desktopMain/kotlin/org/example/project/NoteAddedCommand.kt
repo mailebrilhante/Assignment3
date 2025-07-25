@@ -10,8 +10,10 @@ class NoteAddedCommand(
     private val note: String?
 ) : ShipmentCommand {
     override fun execute() {
-        note?.let { shipment.addNote(it) }
-        shipment.addUpdate("Note added on ${formatDate(timestamp)}: '$note'")
+        note?.let {
+            shipment.addNote(it)
+            shipment.addUpdate("Note added on ${formatDate(timestamp)}: '$it'")
+        }
     }
 
 } 
