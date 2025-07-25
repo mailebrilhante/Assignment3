@@ -10,8 +10,7 @@ import kotlin.concurrent.thread
 fun main() = runBlocking {
     // Start the server in a background thread
     val serverJob = launch(Dispatchers.IO) {
-        val server = TrackingServer()
-        server.start()
+        TrackingServer.start()
     }
 
     // Start the client UI on the main thread

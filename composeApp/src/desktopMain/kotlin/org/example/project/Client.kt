@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.coroutineScope
 
-class Client {
+object Client {
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json()

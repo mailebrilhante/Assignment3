@@ -11,14 +11,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-class TrackingServer {
+object TrackingServer {
     private val _shipments = mutableMapOf<String, Shipment>()
     val shipments: Map<String, Shipment>
         get() = _shipments.toMap()
-
-    fun addShipmentForTesting(id: String, shipment: Shipment) {
-        _shipments[id] = shipment
-    }
 
     fun start() {
         embeddedServer(Netty, port = 8080) {

@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -17,15 +18,17 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun App() {
-    val client = remember { Client() }
-    var shipmentId by remember { mutableStateOf("") }
-    var updateString by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val client = Client
     val trackedShipments by client.trackedShipments.collectAsState()
     val errorMessage by client.errorMessage.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
+    var shipmentId by remember { mutableStateOf("") }
+    var updateMessage by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        client.startPolling()
+        launch {
+            client.startPolling()
+        }
     }
 
     LaunchedEffect(errorMessage) {
@@ -38,47 +41,55 @@ fun App() {
     }
 
     MaterialTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 TextField(
                     value = shipmentId,
                     onValueChange = { shipmentId = it },
                     label = { Text("Shipment ID") }
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
                     coroutineScope.launch {
                         client.trackShipment(shipmentId)
-                        shipmentId = ""
                     }
                 }) {
                     Text("Track")
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
-            Row {
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 TextField(
-                    value = updateString,
-                    onValueChange = { updateString = it },
+                    value = updateMessage,
+                    onValueChange = { updateMessage = it },
                     label = { Text("Update message") }
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
                     coroutineScope.launch {
-                        client.sendUpdate(updateString)
-                        updateString = ""
+                        client.sendUpdate(updateMessage)
                     }
                 }) {
                     Text("Send Update")
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+
             errorMessage?.let {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(it, color = MaterialTheme.colors.error)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             LazyColumn {
                 items(trackedShipments) { shipment ->
-                    Column {
+                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("ID: ${shipment.id}")
+                            Text("ID: ${shipment.id}", style = MaterialTheme.typography.h6)
                             Button(onClick = {
                                 client.stopTrackingShipment(shipment.id)
                             }) {
@@ -91,13 +102,17 @@ fun App() {
                             SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(it))
                         } ?: "N/A"
                         Text("Expected Delivery: $formattedDate")
-                        Text("Notes:")
-                        shipment.notes.forEach { note ->
-                            Text("- $note")
+                        if (shipment.notes.isNotEmpty()) {
+                            Text("Notes:")
+                            shipment.notes.forEach { note ->
+                                Text("  - $note")
+                            }
                         }
-                        Text("Updates:")
-                        shipment.updates.forEach { update ->
-                            Text("- $update")
+                        if (shipment.updates.isNotEmpty()) {
+                            Text("Updates:")
+                            shipment.updates.forEach { update ->
+                                Text("  - $update")
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
